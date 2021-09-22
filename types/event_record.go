@@ -79,16 +79,17 @@ type EventRecords struct {
 	Offences_Offence                                []EventOffencesOffence                          //nolint:stylecheck,golint
 	Session_NewSession                              []EventSessionNewSession                        //nolint:stylecheck,golint
 	Staking_EraPayout                               []EventStakingEraPayout                         //nolint:stylecheck,golint
-	Staking_Reward                                  []EventStakingReward                            //nolint:stylecheck,golint
-	Staking_Slash                                   []EventStakingSlash                             //nolint:stylecheck,golint
+	Staking_Rewarded                                []EventStakingRewarded                          //nolint:stylecheck,golint
+	Staking_Slashed                                 []EventStakingSlashed                           //nolint:stylecheck,golint
 	Staking_OldSlashingReportDiscarded              []EventStakingOldSlashingReportDiscarded        //nolint:stylecheck,golint
-	Staking_StakingElection                         []EventStakingStakingElection                   //nolint:stylecheck,golint
+	Staking_StakingElectionFailed                   []EventStakingStakingElectionFailed             //nolint:stylecheck,golint
 	Staking_Bonded                                  []EventStakingBonded                            //nolint:stylecheck,golint
 	Staking_Unbonded                                []EventStakingUnbonded                          //nolint:stylecheck,golint
 	Staking_Withdrawn                               []EventStakingWithdrawn                         //nolint:stylecheck,golint
 	Staking_Kicked                                  []EventStakingKicked                            //nolint:stylecheck,golint
 	Staking_Chilled                                 []EventStakingChilled                           //nolint:stylecheck,golint
 	Staking_StakersElected                          []EventStakingStakersElected                    //nolint:stylecheck,golint
+	Staking_PayoutStarted                           []EventStakingPayoutStarted                     //nolint:stylecheck,golint
 	System_ExtrinsicSuccess                         []EventSystemExtrinsicSuccess                   //nolint:stylecheck,golint
 	System_ExtrinsicFailed                          []EventSystemExtrinsicFailed                    //nolint:stylecheck,golint
 	System_CodeUpdated                              []EventSystemCodeUpdated                        //nolint:stylecheck,golint
@@ -157,13 +158,13 @@ type EventRecords struct {
 	ElectionProviderMultiPhase_Slashed              []EventElectionMultiPhaseSlashed                //nolint:stylecheck,golint
 	ElectionProviderMultiPhase_SignedPhaseStarted   []EventElectionMultiPhaseSignedPhaseStarted     //nolint:stylecheck,golint
 	ElectionProviderMultiPhase_UnsignedPhaseStarted []EventElectionMultiPhaseUnsignedPhaseStarted   //nolint:stylecheck,golint
-	Elections_NewTerm                               []EventElectionsNewTerm                         //nolint:stylecheck,golint
-	Elections_EmptyTerm                             []EventElectionsEmptyTerm                       //nolint:stylecheck,golint
-	Elections_ElectionError                         []EventElectionsElectionError                   //nolint:stylecheck,golint
-	Elections_MemberKicked                          []EventElectionsMemberKicked                    //nolint:stylecheck,golint
-	Elections_Renounced                             []EventElectionsRenounced                       //nolint:stylecheck,golint
-	Elections_CandidateSlashed                      []EventElectionsCandidateSlashed                //nolint:stylecheck,golint
-	Elections_SeatHolderSlashed                     []EventElectionsSeatHolderSlashed               //nolint:stylecheck,golint
+	PhragmenElection_NewTerm                        []EventElectionsNewTerm                         //nolint:stylecheck,golint
+	PhragmenElection_EmptyTerm                      []EventElectionsEmptyTerm                       //nolint:stylecheck,golint
+	PhragmenElection_ElectionError                  []EventElectionsElectionError                   //nolint:stylecheck,golint
+	PhragmenElection_MemberKicked                   []EventElectionsMemberKicked                    //nolint:stylecheck,golint
+	PhragmenElection_Renounced                      []EventElectionsRenounced                       //nolint:stylecheck,golint
+	PhragmenElection_CandidateSlashed               []EventElectionsCandidateSlashed                //nolint:stylecheck,golint
+	PhragmenElection_SeatHolderSlashed              []EventElectionsSeatHolderSlashed               //nolint:stylecheck,golint
 	Identity_IdentitySet                            []EventIdentitySet                              //nolint:stylecheck,golint
 	Identity_IdentityCleared                        []EventIdentityCleared                          //nolint:stylecheck,golint
 	Identity_IdentityKilled                         []EventIdentityKilled                           //nolint:stylecheck,golint
@@ -236,6 +237,7 @@ type EventRecords struct {
 	Contracts_CodeRemoved                           []EventContractsCodeRemoved                     //nolint:stylecheck,golint
 	Utility_BatchInterrupted                        []EventUtilityBatchInterrupted                  //nolint:stylecheck,golint
 	Utility_BatchCompleted                          []EventUtilityBatchCompleted                    //nolint:stylecheck,golint
+	Utility_ItemCompleted                           []EventUtilityItemCompleted                     //nolint:stylecheck,golint
 	Multisig_NewMultisig                            []EventMultisigNewMultisig                      //nolint:stylecheck,golint
 	Multisig_MultisigApproval                       []EventMultisigApproval                         //nolint:stylecheck,golint
 	Multisig_MultisigExecuted                       []EventMultisigExecuted                         //nolint:stylecheck,golint
@@ -250,6 +252,14 @@ type EventRecords struct {
 	CollatorSelection_NewCandidacyBond              []EventCollatorSelectionNewCandidacyBond        //nolint:stylecheck,golint
 	CollatorSelection_CandidateAdded                []EventCollatorSelectionCandidateAdded          //nolint:stylecheck,golint
 	CollatorSelection_CandidateRemoved              []EventCollatorSelectionCandidateRemoved        //nolint:stylecheck,golint
+	EVM_Log                                         []EventEVMLog                                   //nolint:stylecheck,golint
+	EVM_Created                                     []EventEVMCreated                               //nolint:stylecheck,golint
+	EVM_CreatedFailed                               []EventEVMCreatedFailed                         //nolint:stylecheck,golint
+	EVM_Executed                                    []EventEVMExecuted                              //nolint:stylecheck,golint
+	EVM_ExecutedFailed                              []EventEVMExecutedFailed                        //nolint:stylecheck,golint
+	EVM_BalanceDeposit                              []EventEVMBalanceDeposit                        //nolint:stylecheck,golint
+	EVM_BalanceWithdraw                             []EventEVMBalanceWithdraw                       //nolint:stylecheck,golint
+	Ethereum_Executed                               []EventEthereumExecuted                         //nolint:stylecheck,golint
 }
 
 // DecodeEventRecords decodes the events records from an EventRecordRaw into a target t using the given Metadata m

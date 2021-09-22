@@ -209,7 +209,7 @@ type EventStakingEraPayout struct {
 }
 
 // EventStakingReward is emitted when the staker has been rewarded by this amount.
-type EventStakingReward struct {
+type EventStakingRewarded struct {
 	Phase  Phase
 	Stash  AccountID
 	Amount U128
@@ -217,7 +217,7 @@ type EventStakingReward struct {
 }
 
 // EventStakingSlash is emitted when one validator (and its nominators) has been slashed by the given amount
-type EventStakingSlash struct {
+type EventStakingSlashed struct {
 	Phase     Phase
 	AccountID AccountID
 	Balance   U128
@@ -233,7 +233,7 @@ type EventStakingOldSlashingReportDiscarded struct {
 }
 
 // EventStakingStakingElection is emitted when a new set of stakers was elected with the given
-type EventStakingStakingElection struct {
+type EventStakingStakingElectionFailed struct {
 	Phase  Phase
 	Topics []Hash
 }
@@ -280,6 +280,13 @@ type EventStakingChilled struct {
 type EventStakingStakersElected struct {
 	Phase  Phase
 	Topics []Hash
+}
+
+type EventStakingPayoutStarted struct {
+	Phase          Phase
+	EraIndex       U32
+	ValidatorStash AccountID
+	Topics         []Hash
 }
 
 // EventSystemExtrinsicSuccessV8 is emitted when an extrinsic completed successfully
@@ -1601,6 +1608,11 @@ type EventUtilityBatchCompleted struct {
 	Topics []Hash
 }
 
+type EventUtilityItemCompleted struct {
+	Phase  Phase
+	Topics []Hash
+}
+
 // EventUtilityNewMultisig is emitted when a new multisig operation has begun.
 // First param is the account that is approving, second is the multisig account, third is hash of the call.
 type EventMultisigNewMultisig struct {
@@ -1752,4 +1764,204 @@ type EventCollatorSelectionCandidateRemoved struct {
 	Phase     Phase
 	Candidate AccountID
 	Topics    []Hash
+}
+
+type Log struct {
+	Address H160
+	Topics  []Hash
+	Data    Bytes
+}
+
+type EventEVMLog struct {
+	Phase  Phase
+	Log    Log
+	Topics []Hash
+}
+
+type EventEVMCreated struct {
+	Phase   Phase
+	Address H160
+	Topics  []Hash
+}
+
+type EventEVMCreatedFailed struct {
+	Phase   Phase
+	Address H160
+	Topics  []Hash
+}
+
+type EventEVMExecuted struct {
+	Phase   Phase
+	Address H160
+	Topics  []Hash
+}
+
+type EventEVMExecutedFailed struct {
+	Phase   Phase
+	Address H160
+	Topics  []Hash
+}
+
+type EventEVMBalanceDeposit struct {
+	Phase   Phase
+	Sender  AccountID
+	Address H160
+	Value   U256
+	Topics  []Hash
+}
+
+type EventEVMBalanceWithdraw struct {
+	Phase   Phase
+	Sender  AccountID
+	Address H160
+	Value   U256
+	Topics  []Hash
+}
+
+type ExitReason struct {
+	Reason            byte
+	ReasonDetail      byte
+	IsReasonAsError   bool
+	ReasonAsError     byte
+	OtherNormalErrors Bytes
+}
+
+func (er *ExitReason) Decode(decoder scale.Decoder) error {
+	b, err := decoder.ReadOneByte()
+	if err != nil {
+		return err
+	}
+
+	switch b {
+	case 0: // Succeed
+		bb, errb := decoder.ReadOneByte()
+		if errb != nil {
+			return errb
+		}
+
+		switch bb {
+		case 0, 1, 2: // Stopped, Returned, Suicided
+			er.Reason = b
+			er.ReasonDetail = bb
+		default:
+			return fmt.Errorf("unknown ExitSucceed enum: %v", bb)
+		}
+	case 1: // Error
+		bb, errb := decoder.ReadOneByte()
+		if errb != nil {
+			return errb
+		}
+
+		switch bb {
+		case 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12: // StackUnderflow, StackOverflow, InvalidJump, InvalidRange, DesignatedInvalid, CallTooDeep, CreateCollision, CreateContractLimit, OutOfOffset, OutOfGas, OutOfFund, PCUnderflow, CreateEmpty
+			er.Reason = b
+			er.ReasonDetail = bb
+		case 13:
+			var bbb []byte
+			errbbb := decoder.Decode(&bbb)
+			if errbbb != nil {
+				return errbbb
+			}
+			er.Reason = b
+			er.ReasonDetail = bb
+			er.OtherNormalErrors = bbb
+		default:
+			return fmt.Errorf("unknown ExitError enum: %v", bb)
+		}
+	case 2: // Revert
+		bb, errb := decoder.ReadOneByte()
+		if errb != nil {
+			return errb
+		}
+
+		switch bb {
+		case 0: // Reverted
+			er.Reason = b
+			er.ReasonDetail = bb
+		default:
+			return fmt.Errorf("unknown ExitRevert enum: %v", bb)
+		}
+	case 3: // Fatal
+		bb, errb := decoder.ReadOneByte()
+		if errb != nil {
+			return errb
+		}
+
+		switch bb {
+		case 0, 1: // NotSupported, UnhandledInterrupt
+			er.Reason = b
+			er.ReasonDetail = bb
+		case 2:
+			bbb, errbb := decoder.ReadOneByte()
+			if errbb != nil {
+				return errbb
+			}
+
+			switch bbb {
+			case 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12: // StackUnderflow, StackOverflow, InvalidJump, InvalidRange, DesignatedInvalid, CallTooDeep, CreateCollision, CreateContractLimit, OutOfOffset, OutOfGas, OutOfFund, PCUnderflow, CreateEmpty
+				er.Reason = b
+				er.ReasonDetail = bb
+				er.ReasonAsError = bbb
+				er.IsReasonAsError = true
+			case 13:
+				var bbbb []byte
+				errbbbb := decoder.Decode(&bbbb)
+				if errbbbb != nil {
+					return errbbbb
+				}
+				er.Reason = b
+				er.ReasonDetail = bb
+				er.ReasonAsError = bbb
+				er.IsReasonAsError = true
+				er.OtherNormalErrors = bbbb
+			default:
+				return fmt.Errorf("unknown ExitError enum: %v", bb)
+			}
+		case 3:
+			var bbb []byte
+			errbbb := decoder.Decode(&bbb)
+			if errbbb != nil {
+				return errbbb
+			}
+			er.Reason = b
+			er.ReasonDetail = bb
+			er.OtherNormalErrors = bbb
+		default:
+			return fmt.Errorf("unknown ExitSucceed enum: %v", bb)
+		}
+	default:
+		return fmt.Errorf("unknown ExitReason enum: %v", b)
+	}
+	return err
+}
+
+func (d ExitReason) Encode(encoder scale.Encoder) error {
+	var err error
+	err = encoder.PushByte(d.Reason)
+	if err != nil {
+		return err
+	}
+	err = encoder.PushByte(d.ReasonDetail)
+	if err != nil {
+		return err
+	}
+	if d.IsReasonAsError {
+		err = encoder.PushByte(d.ReasonAsError)
+		if err != nil {
+			return err
+		}
+	}
+	if len(d.OtherNormalErrors) > 0 {
+		err = encoder.Write(d.OtherNormalErrors)
+	}
+	return err
+}
+
+type EventEthereumExecuted struct {
+	Phase           Phase
+	From            H160
+	To              H160
+	TransactionHash H256
+	ExitReason      ExitReason
+	Topics          []Hash
 }
