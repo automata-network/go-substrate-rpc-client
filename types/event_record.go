@@ -78,7 +78,7 @@ type EventRecords struct {
 	Indices_IndexFrozen                             []EventIndicesIndexFrozen                       //nolint:stylecheck,golint
 	Offences_Offence                                []EventOffencesOffence                          //nolint:stylecheck,golint
 	Session_NewSession                              []EventSessionNewSession                        //nolint:stylecheck,golint
-	Staking_EraPayout                               []EventStakingEraPayout                         //nolint:stylecheck,golint
+	Staking_EraPaid                                 []EventStakingEraPayout                         //nolint:stylecheck,golint
 	Staking_Rewarded                                []EventStakingRewarded                          //nolint:stylecheck,golint
 	Staking_Slashed                                 []EventStakingSlashed                           //nolint:stylecheck,golint
 	Staking_OldSlashingReportDiscarded              []EventStakingOldSlashingReportDiscarded        //nolint:stylecheck,golint
